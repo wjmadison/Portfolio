@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Compare</title>
+    <link rel="stylesheet" href="styles.css">
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+ <div class="overall-container">
+ <div class="left">
+  <div class="weather-container">
+    <h1 id="first-location"></h1>
+	<h2 id="first-coordinates"></h2>
+    <div class="weather-info">
+      <div class="info">
+        <h3>High</h3>
+        <p id="first-high"></p>
+      </div>
+      <div class="info">
+        <h3>Low</h3>
+        <p id="first-low"></p>
+      </div>
+      <div class="info">
+        <h3>Humidity</h3>
+        <p id="first-humidity"></p>
+      </div>
+      <div class="info">
+        <h3>Precipitation</h3>
+        <p id="first-precipitation"></p>
+      </div>
+    </div>
+  </div>
+  <div class="weather-container">
+    <h1 id="second-location"></h1>
+	<h2 id="second-coordinates"></h2>
+    <div class="weather-info">
+      <div class="info">
+        <h3>High</h3>
+        <p id="second-high"></p>
+      </div>
+      <div class="info">
+        <h3>Low</h3>
+        <p id="second-low"></p>
+      </div>
+      <div class="info">
+        <h3>Humidity</h3>
+        <p id="second-humidity"></p>
+      </div>
+      <div class="info">
+        <h3>Precipitation</h3>
+        <p id="second-precipitation"></p>
+      </div>
+	</div>
+  </div>
+ </div>
+ <div class="right">
+ <div class="weather-container">
+    <h1 id="second-location">Comparison:</h1>
+	<p id="compare-highs"></p>
+	<p id="compare-lows"></p>
+	<p id="compare-humidity"></p>
+	<p id="compare-precipitation"></p>
+  </div>
+ </div>
+ </div>
+</div>
+<script>
+    $(document).ready(function() {
+	//Display location names and coordinates
+		document.getElementById("first-location").textContent=localStorage.getItem("first-city") + ", " + localStorage.getItem("first-code");
+		document.getElementById("first-coordinates").textContent=localStorage.getItem("first-latitude") + ", " + localStorage.getItem("first-longitude");
+		document.getElementById("second-location").textContent=localStorage.getItem("second-city") + ", " + localStorage.getItem("second-code");
+		document.getElementById("second-coordinates").textContent=localStorage.getItem("second-latitude") + ", " + localStorage.getItem("second-longitude");
+	//Get info with current humidity, daily max, daily min, precipitation
+	//https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto",
+			//First
+			var first_high
+			var first_low
+			var first_humidity
+			var first_precipitation
+			$.ajax({
+					url: "https://api.open-meteo.com/v1/forecast?latitude=" + localStorage.getItem("first-latitude") + "&longitude=" + localStorage.getItem("first-longitude") + "&current=relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto",
+					success: function (result) {
+						first_high = Number(result.daily.temperature_2m_max[0]);
+						document.getElementById("first-high").textContent = first_high + "°C";
+						first_low = Number(result.daily.temperature_2m_min[0]);
+						document.getElementById("first-low").textContent = first_low + "°C";
+						first_humidity = Number(result.current.relative_humidity_2m);
+						document.getElementById("first-humidity").textContent = first_humidity + "%";
+						first_precipitation = Number(result.daily.precipitation_sum[0]);
+						document.getElementById("first-precipitation").textContent = first_precipitation + "mm";
+					},
+					error: function (xhr, status, error) {
+						console.log(error);
+					}
+			});
+			//Second
+			let second_high = 0
+			var second_low
+			var second_humidity
+			var second_precipitation
+			$.ajax({
+					url: "https://api.open-meteo.com/v1/forecast?latitude=" + localStorage.getItem("second-latitude") + "&longitude=" + localStorage.getItem("second-longitude") + "&current=relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto",
+					success: function (result) {
+						second_high = Number(result.daily.temperature_2m_max[0]);
+						document.getElementById("second-high").textContent = second_high + "°C";
+						second_low = Number(result.daily.temperature_2m_min[0]);
+						document.getElementById("second-low").textContent = second_low + "°C";
+						second_humidity = Number(result.current.relative_humidity_2m);
+						document.getElementById("second-humidity").textContent = second_humidity + "%";
+						second_precipitation = Number(result.daily.precipitation_sum[0]);
+						document.getElementById("second-precipitation").textContent = second_precipitation + "mm";
+						
+						//Compare highs
+						console.log(second_high)
+						if (second_high > first_high){
+							document.getElementById("compare-highs").innerText = "The high in " + localStorage.getItem("second-city") + " is " + (parseFloat(second_high) - parseFloat(first_high)).toFixed(1) + " degrees hotter";
+						}
+						else if (second_high = first_high){
+							document.getElementById("compare-highs").innerText = "The highs in each city are equal.";
+						}
+						else{
+							document.getElementById("compare-highs").innerText = "The high in " + localStorage.getItem("first-city") + " is " + (parseFloat(first_high) - parseFloat(second_high)).toFixed(1) + " degrees hotter";
+						}
+						//Compare lows
+						if (second_low > first_low){
+							document.getElementById("compare-lows").textContent = "The low in " + localStorage.getItem("first-city") + " is " + (parseFloat(second_low) - parseFloat(first_low)).toFixed(1) + " degrees colder";
+						}
+						else if (second_low = first_low){
+							document.getElementById("compare-lows").textContent = "The lows in each city are equal.";
+						}
+						else{
+							document.getElementById("compare-lows").textContent = "The low in " + localStorage.getItem("second-city") + " is " + (parseFloat(first_low) - parseFloat(second_low)).toFixed(1) + " degrees colder";
+						}
+			//Compare humidity
+			//Compare precipitation
+					},
+					error: function (xhr, status, error) {
+						console.log(error);
+					}
+			});
+			
+    });
+</script>
+
+</body>
+</html>
