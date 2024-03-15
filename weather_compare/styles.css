@@ -1,0 +1,60 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.weather-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+.location {
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin: 0;
+    color: #666;
+}
+
+.weather-info {
+    display: flex;
+    justify-content: space-around;
+}
+
+.temperature,
+.description,
+.humidity,
+.wind {
+    flex: 1;
+    padding: 10px;
+}
+
+.temperature p,
+.humidity p,
+.wind p {
+    margin: 0;
+    color: #333;
+}
+
+h3 {
+    color: #666;
+}
+
+/* Add media queries for responsive design */
+@media screen and (max-width: 600px) {
+    .weather-info {
+        flex-direction: column;
+    }
+}
