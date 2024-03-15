@@ -375,8 +375,9 @@ def main():
     active_songs = random_from_active(active_lists)
     print("Select a song to add: ")
     my_list.append(choices(active_songs))
-    print_list(my_list)
-    print("")
+    #print("")
+    #print_list(my_list)
+    #print("")
     while True:
         print("1. Review playlist")
         print("2. Add songs")
